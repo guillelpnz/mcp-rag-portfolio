@@ -7,13 +7,14 @@ from __future__ import annotations
 import os
 
 from .base import LLMError, LLMProvider
-from .cloud_providers import BedrockProvider, OpenAIProvider
+from .cloud_providers import BedrockProvider, HuggingFaceProvider, OpenAIProvider
 from .ollama_provider import OllamaProvider
 
 _PROVIDERS = {
     "ollama": OllamaProvider,
     "bedrock": BedrockProvider,
     "openai": OpenAIProvider,
+    "huggingface": HuggingFaceProvider,
 }
 
 

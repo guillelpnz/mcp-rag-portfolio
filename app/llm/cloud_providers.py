@@ -79,3 +79,44 @@ class OpenAIProvider(LLMProvider):
             raise LLMError(f"OpenAI call failed: {exc}") from exc
 
         return resp.choices[0].message.content.strip()
+
+
+class HuggingFaceProvider(LLMProvider):
+    """Hugging Face Inference API — free tier, ideal for public demos.
+
+    Reads ``HF_TOKEN`` from env (create one at huggingface.co/settings/tokens).
+    """
+
+    name = "huggingface"
+
+    def __init__(self, model: str | None = None) -> None:
+        self.model = model or os.getenv(
+            "HF_MODEL", "meta-llama/Llama-3.2-3B-Instruct"
+        )
+
+    def complete(self, prompt: str, *, system: str | None = None) -> str:
+        try:
+            from huggingface_hub import InferenceClient  # noqa: PLC0415
+            from huggingface_hub.errors import HfHubHTTPError  # noqa: PLC0415
+        except ImportError as exc:
+            raise LLMError(
+                "huggingface_hub not installed. Run `pip install huggingface_hub`."
+            ) from exc
+
+        messages = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        messages.append({"role": "user", "content": prompt})
+
+        try:
+            client = InferenceClient(model=self.model, token=os.getenv("HF_TOKEN"))
+            resp = client.chat_completion(messages=messages, max_tokens=512)
+        except HfHubHTTPError as exc:
+            raise LLMError(f"Hugging Face call failed: {exc}") from exc
+        except Exception as exc:  # network, auth, model-loading, etc.
+            raise LLMError(f"Hugging Face call failed: {exc}") from exc
+
+        try:
+            return resp.choices[0].message.content.strip()
+        except (AttributeError, IndexError) as exc:
+            raise LLMError(f"Unexpected HF response shape: {resp}") from exc

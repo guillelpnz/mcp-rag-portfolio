@@ -1,3 +1,14 @@
+---
+title: MCP RAG Portfolio
+emoji: 🤖
+colorFrom: blue
+colorTo: indigo
+sdk: docker
+app_port: 8000
+pinned: false
+license: mit
+---
+
 # 🤖 MCP RAG Portfolio
 
 > Ask an LLM questions about my CV and LinkedIn profile — answered with RAG over a
