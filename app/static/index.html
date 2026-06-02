@@ -27,11 +27,45 @@
       -webkit-font-smoothing: antialiased;
     }
     body {
+      position: relative;
       display: flex;
       flex-direction: column;
       padding: 32px 40px;
       min-height: 100vh;
+      overflow-x: hidden;
     }
+    /* Subtle dot grid covering the whole viewport. */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(255, 255, 255, 0.06) 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: radial-gradient(ellipse 80% 60% at 50% 45%, #000 40%, transparent 100%);
+      -webkit-mask-image: radial-gradient(ellipse 80% 60% at 50% 45%, #000 40%, transparent 100%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    /* Soft radial glow centered behind the input. */
+    body::after {
+      content: '';
+      position: fixed;
+      left: 50%;
+      top: 52%;
+      width: 900px;
+      height: 900px;
+      transform: translate(-50%, -50%);
+      background: radial-gradient(
+        circle,
+        rgba(99, 102, 241, 0.10) 0%,
+        rgba(59, 130, 246, 0.05) 30%,
+        transparent 60%
+      );
+      filter: blur(40px);
+      pointer-events: none;
+      z-index: 0;
+    }
+    header, main, footer { position: relative; z-index: 1; }
     header {
       font-size: 14px;
     }

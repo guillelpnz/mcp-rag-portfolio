@@ -89,17 +89,22 @@ class HuggingFaceProvider(LLMProvider):
 
     name = "huggingface"
 
+    # Comma-separated list of fallbacks. HF's free `hf-inference` tier prunes
+    # models regularly, so we try several non-gated chat models in order.
+    DEFAULT_MODELS = (
+        "Qwen/Qwen2.5-7B-Instruct,"
+        "mistralai/Mistral-7B-Instruct-v0.3,"
+        "HuggingFaceH4/zephyr-7b-beta,"
+        "microsoft/Phi-3-mini-4k-instruct"
+    )
+
     def __init__(self, model: str | None = None) -> None:
-        # Default to a non-gated model available on the free `hf-inference`
-        # provider. Override via the HF_MODEL env var without code changes.
-        self.model = model or os.getenv(
-            "HF_MODEL", "HuggingFaceH4/zephyr-7b-beta"
-        )
+        raw = model or os.getenv("HF_MODEL") or self.DEFAULT_MODELS
+        self.models = [m.strip() for m in raw.split(",") if m.strip()]
 
     def complete(self, prompt: str, *, system: str | None = None) -> str:
         try:
             from huggingface_hub import InferenceClient  # noqa: PLC0415
-            from huggingface_hub.errors import HfHubHTTPError  # noqa: PLC0415
         except ImportError as exc:
             raise LLMError(
                 "huggingface_hub not installed. Run `pip install huggingface_hub`."
@@ -110,21 +115,27 @@ class HuggingFaceProvider(LLMProvider):
             messages.append({"role": "system", "content": system})
         messages.append({"role": "user", "content": prompt})
 
-        try:
-            # Force the free HF-hosted provider; otherwise the router may
-            # try a paid one (Together, Fireworks, ...) the user hasn't enabled.
-            client = InferenceClient(
-                model=self.model,
-                token=os.getenv("HF_TOKEN"),
-                provider="hf-inference",
-            )
-            resp = client.chat_completion(messages=messages, max_tokens=512)
-        except HfHubHTTPError as exc:
-            raise LLMError(f"Hugging Face call failed: {exc}") from exc
-        except Exception as exc:  # network, auth, model-loading, etc.
-            raise LLMError(f"Hugging Face call failed: {exc}") from exc
+        token = os.getenv("HF_TOKEN")
+        errors: list[str] = []
+        for model in self.models:
+            try:
+                # Force the free HF-hosted provider; otherwise the router may
+                # pick a paid one (Together, Fireworks, ...) the user hasn't
+                # enabled.
+                client = InferenceClient(
+                    model=model, token=token, provider="hf-inference"
+                )
+                resp = client.chat_completion(messages=messages, max_tokens=512)
+            except Exception as exc:
+                errors.append(f"{model}: {exc}")
+                continue
 
-        try:
-            return resp.choices[0].message.content.strip()
-        except (AttributeError, IndexError) as exc:
-            raise LLMError(f"Unexpected HF response shape: {resp}") from exc
+            try:
+                return resp.choices[0].message.content.strip()
+            except (AttributeError, IndexError):
+                errors.append(f"{model}: unexpected response shape {resp}")
+                continue
+
+        raise LLMError(
+            "All Hugging Face models failed. Tried:\n- " + "\n- ".join(errors)
+        )
