@@ -1,13 +1,16 @@
-"""Optional cloud providers — Bedrock and OpenAI.
+"""Optional cloud providers — Bedrock, OpenAI, HuggingFace, and Groq.
 
-Neither is needed to run the demo. They exist to show the adapter pattern
-scales to production backends (and because the author uses Bedrock at work).
-Both import their SDKs lazily so the package works without them installed.
+None of the cloud providers is needed for the demo's free-tier story; they
+exist to show the adapter pattern scales to production backends. SDKs that
+aren't in requirements.txt are imported lazily so the package keeps working
+without them installed.
 """
 from __future__ import annotations
 
 import json
 import os
+
+import httpx
 
 from .base import LLMError, LLMProvider
 
@@ -139,3 +142,57 @@ class HuggingFaceProvider(LLMProvider):
         raise LLMError(
             "All Hugging Face models failed. Tried:\n- " + "\n- ".join(errors)
         )
+
+
+class GroqProvider(LLMProvider):
+    """Groq's OpenAI-compatible chat API.
+
+    Groq's free tier doesn't require a credit card and ships sub-second
+    latency on Llama 3 / Mixtral / Gemma. Reads ``GROQ_API_KEY`` from env.
+    """
+
+    name = "groq"
+
+    def __init__(self, model: str | None = None) -> None:
+        self.model = model or os.getenv("GROQ_MODEL", "llama-3.1-8b-instant")
+        self.base_url = "https://api.groq.com/openai/v1"
+        self.timeout = 30.0
+
+    def complete(self, prompt: str, *, system: str | None = None) -> str:
+        token = os.getenv("GROQ_API_KEY")
+        if not token:
+            raise LLMError(
+                "GROQ_API_KEY not set. Get a free key at console.groq.com."
+            )
+
+        messages: list[dict] = []
+        if system:
+            messages.append({"role": "system", "content": system})
+        messages.append({"role": "user", "content": prompt})
+
+        try:
+            resp = httpx.post(
+                f"{self.base_url}/chat/completions",
+                json={
+                    "model": self.model,
+                    "messages": messages,
+                    "max_tokens": 512,
+                },
+                headers={"Authorization": f"Bearer {token}"},
+                timeout=self.timeout,
+            )
+            resp.raise_for_status()
+        except httpx.TimeoutException as exc:
+            raise LLMError(f"Groq timed out after {self.timeout}s.") from exc
+        except httpx.HTTPStatusError as exc:
+            raise LLMError(
+                f"Groq returned {exc.response.status_code}: "
+                f"{exc.response.text[:200]}"
+            ) from exc
+        except httpx.HTTPError as exc:
+            raise LLMError(f"Groq call failed: {exc}") from exc
+
+        try:
+            return resp.json()["choices"][0]["message"]["content"].strip()
+        except (KeyError, IndexError) as exc:
+            raise LLMError(f"Unexpected Groq response: {resp.text[:200]}") from exc

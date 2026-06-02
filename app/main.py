@@ -10,6 +10,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
 from .llm import LLMError
@@ -44,6 +45,7 @@ app = FastAPI(
     version="1.0.0",
     lifespan=lifespan,
 )
+app.mount("/static", StaticFiles(directory=_STATIC_DIR), name="static")
 
 
 class AskRequest(BaseModel):
