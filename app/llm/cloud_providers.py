@@ -90,8 +90,10 @@ class HuggingFaceProvider(LLMProvider):
     name = "huggingface"
 
     def __init__(self, model: str | None = None) -> None:
+        # Default to a non-gated model available on the free `hf-inference`
+        # provider. Override via the HF_MODEL env var without code changes.
         self.model = model or os.getenv(
-            "HF_MODEL", "meta-llama/Llama-3.2-3B-Instruct"
+            "HF_MODEL", "HuggingFaceH4/zephyr-7b-beta"
         )
 
     def complete(self, prompt: str, *, system: str | None = None) -> str:
@@ -109,7 +111,13 @@ class HuggingFaceProvider(LLMProvider):
         messages.append({"role": "user", "content": prompt})
 
         try:
-            client = InferenceClient(model=self.model, token=os.getenv("HF_TOKEN"))
+            # Force the free HF-hosted provider; otherwise the router may
+            # try a paid one (Together, Fireworks, ...) the user hasn't enabled.
+            client = InferenceClient(
+                model=self.model,
+                token=os.getenv("HF_TOKEN"),
+                provider="hf-inference",
+            )
             resp = client.chat_completion(messages=messages, max_tokens=512)
         except HfHubHTTPError as exc:
             raise LLMError(f"Hugging Face call failed: {exc}") from exc
