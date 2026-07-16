@@ -8,7 +8,7 @@ from __future__ import annotations
 import pytest
 
 from app.llm import LLMError
-from app.rag import _PROMPT_TEMPLATE, _chunk
+from app.rag import _PROMPT_TEMPLATE, _chunk, _factual_guardrail
 
 
 # --- chunking -------------------------------------------------------------
@@ -31,6 +31,25 @@ def test_chunk_short_text_single_chunk():
 def test_prompt_requires_correction_of_misleading_premises():
     assert "Treat assumptions in the question as unverified" in _PROMPT_TEMPLATE
     assert "Correct any false or misleading premise" in _PROMPT_TEMPLATE
+
+
+@pytest.mark.parametrize(
+    "question",
+    [
+        "Did Guillermo migrate from RabbitMQ to Kafka?",
+        "Was RabbitMQ replaced by Kafka?",
+        "Tell me about the RabbitMQ to Kafka migration.",
+    ],
+)
+def test_factual_guardrail_corrects_rabbitmq_kafka_premise(question):
+    answer = _factual_guardrail(question)
+    assert answer is not None
+    assert answer.startswith("No. Kafka already existed")
+    assert "Confluent Cloud to Amazon MSK" in answer
+
+
+def test_factual_guardrail_does_not_intercept_unrelated_kafka_question():
+    assert _factual_guardrail("How was Kafka used?") is None
 
 
 # --- provider factory -----------------------------------------------------

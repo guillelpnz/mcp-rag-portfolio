@@ -55,6 +55,8 @@ used in that production system.
   `all-MiniLM-L6-v2`, and stored in ChromaDB.
 - **Generation**: a pluggable `LLMProvider` (Ollama by default) writes the final
   answer using only the retrieved context.
+- **Factual guardrails**: known high-risk false premises are corrected
+  deterministically before generation.
 - **Swappable backends**: change one env var to go from local Ollama to AWS Bedrock
   or OpenAI — no code changes.
 

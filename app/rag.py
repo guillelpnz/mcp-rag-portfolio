@@ -12,6 +12,12 @@ from pathlib import Path
 from .llm import LLMError, get_provider
 
 _COLLECTION = "profile"
+_RABBITMQ_KAFKA_ANSWER = (
+    "No. Kafka already existed in the original telemetry architecture. "
+    "Guillermo redesigned the path to publish directly to Kafka, removing "
+    "RabbitMQ and its connector from the critical path. He separately migrated "
+    "the managed Kafka platform from Confluent Cloud to Amazon MSK."
+)
 _PROMPT_TEMPLATE = (
     "You are answering questions about Guillermo's professional profile, "
     "using ONLY the context below. If the answer isn't in the context, say so "
@@ -79,10 +85,30 @@ class RAGEngine:
         if not chunks:
             return {"answer": "No indexed content yet — run ingestion first.", "sources": []}
 
+        guarded_answer = _factual_guardrail(question)
+        if guarded_answer is not None:
+            return {
+                "answer": guarded_answer,
+                "sources": sorted(set(sources)),
+            }
+
         context = "\n---\n".join(chunks)
         prompt = _PROMPT_TEMPLATE.format(context=context, question=question)
         answer = get_provider().complete(prompt)
         return {"answer": answer, "sources": sorted(set(sources))}
+
+
+def _factual_guardrail(question: str) -> str | None:
+    """Return deterministic answers for known high-risk false premises."""
+    normalized = " ".join(question.lower().split())
+    migration_terms = ("migrate", "migrated", "migration", "replace", "replaced")
+    if (
+        "rabbitmq" in normalized
+        and "kafka" in normalized
+        and any(term in normalized for term in migration_terms)
+    ):
+        return _RABBITMQ_KAFKA_ANSWER
+    return None
 
 
 def _chunk(text: str, size: int = 800, overlap: int = 100) -> list[str]:
