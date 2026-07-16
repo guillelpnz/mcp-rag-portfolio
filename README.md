@@ -9,7 +9,7 @@ pinned: false
 license: mit
 ---
 
-# 🤖 MCP RAG Portfolio
+# MCP RAG Portfolio
 
 > Ask an LLM questions about my CV and LinkedIn profile — answered with RAG over a
 > local vector store, exposed both as an **MCP server** and a **FastAPI** endpoint.
@@ -23,11 +23,14 @@ license: mit
 
 ## Why this exists
 
-A small, production-minded reference for the pattern I build at work: an **MCP server
-backed by a RAG pipeline**. It indexes my professional profile so any MCP client
-(Claude Desktop, an IDE, an agent) — or plain `curl` — can ask grounded questions
-about my experience. The same engine powers both the MCP tools and the HTTP API,
-which keeps the design honest: one retrieval path, two front doors.
+A production-minded personal project exploring an **MCP server backed by a RAG
+pipeline**. It indexes my professional profile so an MCP client or plain `curl`
+can ask grounded questions about my experience. The same engine powers both the
+MCP tools and the HTTP API: one retrieval path, two front doors.
+
+This repository is separate from my production MCP work. Its ChromaDB and local
+embedding implementation should not be interpreted as the storage architecture
+used in that production system.
 
 ## Architecture
 
