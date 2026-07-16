@@ -1,66 +1,107 @@
-# Guillermo Lupiáñez Tapia — Professional Profile
+# Guillermo Lupiáñez Tapia - Professional Profile
 
 ## Summary
-Backend engineer with 5+ years building robust, scalable and cloud-native systems
-with Python and FastAPI. Focused on the intersection of event-driven backends and
-applied AI — designing microservices that power real-world LLM and RAG features in
-production. Based in Granada, Spain. Open to remote work across Europe.
 
-## Skills
-- Backend: Python, FastAPI, Flask, Django
-- AI / LLM: MCP (Model Context Protocol), RAG, ChromaDB, AWS Bedrock
-- Event-driven: Apache Kafka, RabbitMQ
-- Cloud & DevOps: AWS (Bedrock, Lambda, S3, CloudFront, MediaLive, MediaPackage,
-  Secrets Manager, Lambda@Edge, EC2, RDS), Docker, Kubernetes, Helm, Gitlab CI/CD
+Senior Backend Engineer with 5+ years of experience building high-throughput
+systems with Python, Kafka and AWS. Experienced in distributed systems,
+event-driven architectures, production microservices, multi-tenant platforms
+and Applied AI capabilities. Based in Spain with EU work authorization. Open to
+remote roles and EU relocation.
+
+## Engineering focus
+
+- Backend: Python, FastAPI, Flask, Django, REST, GraphQL
+- Distributed systems: Apache Kafka, event-driven architecture, RabbitMQ
+- Cloud and operations: AWS, Docker, Kubernetes, Helm, CI/CD, Grafana, Kibana
 - Data: PostgreSQL, MongoDB, Redis
-- Testing: Pytest, coverage-first mindset
+- Applied AI: MCP, RAG, Amazon Bedrock, production LLM integrations
+- Quality: Pytest, test architecture, deployment reliability
 
 ## Experience
 
-### Plénitas — Backend Engineer (Microservices · Event-Driven · AI)
-Jul 2025 – present · Remote, Granada
-- Designed and built event-driven backend microservices with Python and FastAPI for
-  a multi-tenant streaming platform.
-- Proposed and led the migration of the event architecture from RabbitMQ to Kafka,
-  now handling 100K+ events/second with improved scalability and service decoupling.
-- Developed an MCP server backed by ChromaDB to expose AI/RAG capabilities to
-  internal tooling and LLM agents.
-- Integrated AWS Bedrock to bring LLM-powered features into the product.
-- Built and operated the streaming media pipeline using AWS MediaLive, MediaPackage,
-  CloudFront and Lambda@Edge for low-latency global content delivery.
-- Used AWS S3, Lambda and Secrets Manager across a secure, cloud-native architecture.
+### Plénitas - Senior Backend Engineer
 
-### Deutsche Telekom — Python Backend Engineer
-Nov 2023 – Jul 2025 · Remote, Granada
-- Developed and maintained high-performance RESTful APIs with Python and FastAPI,
-  following clean architecture principles.
-- Designed PostgreSQL schemas and optimized queries for data consistency.
-- Integrated services in a microservices-based architecture with frontend and DevOps.
-- Containerized apps with Docker, Helm and Kubernetes; contributed to Gitlab CI/CD.
-- Deployed and managed cloud apps on AWS (EC2, S3, RDS).
+July 2025 - July 2026
 
-### Workdeck — Full Stack Engineer
-Feb 2023 – Nov 2023 · Remote, Spain
-- Built backend services with Python and FastAPI for an enterprise productivity
-  platform; frontend in Angular.
-- Integrated external platforms including Shopify, LinkedIn and Google.
-- Deployed and orchestrated services with Docker and Kubernetes.
+- Led the redesign of playback telemetry handling 100K+ sustained events/sec,
+  publishing directly to Kafka and removing RabbitMQ from the critical path.
+- Migrated managed Kafka from Confluent Cloud to Amazon MSK, reducing streaming
+  costs by 80%, approximately from EUR 1,000 to EUR 200 per month.
+- Built a Kafka-based viewing-progress service for a seven-figure user platform,
+  using event coalescing to reduce Redis write pressure.
+- Worked across a multi-tenant video platform serving approximately 50 tenants.
+- Designed AWS media workflows spanning live ingestion, adaptive delivery,
+  clipping, stream concatenation, transcoding and transcription.
+- Built a multi-tenant MCP platform with token-derived isolation. The client ID
+  from each token was propagated to tenant-scoped GraphQL queries and tools.
+- Added human approval for write operations and retrieval over 100+ Confluence
+  pages. Amazon Bedrock supported LLM-backed features in the wider product.
 
-### nucleoo — Full Stack Engineer
-Jan 2022 – Feb 2023 · Granada
-- Core product development with Flask (backend) and MongoDB; Angular frontend.
-- Redesigned the testing infrastructure with Pytest, improving coverage.
+Kafka already existed in the original telemetry architecture. The redesign
+removed RabbitMQ and its connector from the critical path by publishing directly
+to Kafka. The managed Kafka platform was then migrated from Confluent Cloud to
+Amazon MSK.
 
-### CXPLUS — Junior Full-Stack Developer
-Feb 2021 – Jan 2022 · Remote
-- Built a cloud-based ERP/CRM for ISPs from scratch with Django and RESTful APIs.
-- Managed PostgreSQL design; deployed on GCP with Docker.
+### Deutsche Telekom - Python Backend Engineer
+
+November 2023 - July 2025
+
+- Developed and operated 10+ production microservices with Python, FastAPI and
+  PostgreSQL on AWS, using Docker, Kubernetes and Helm.
+- Owned releases from application versioning through environment promotion.
+- Diagnosed and resolved deployment failures caused by incorrectly applied
+  database migrations.
+- Worked with GitLab CI/CD and production visibility through Grafana and Kibana.
+
+### Workdeck - Full Stack Engineer
+
+February 2023 - November 2023
+
+- Built Python/FastAPI services and Angular features for a multi-tenant SaaS
+  platform serving approximately 30 customer organizations.
+- Delivered Shopify, LinkedIn and Google integrations, event-driven AWS
+  workflows and containerized cloud deployments.
+
+### nucleoo - Full Stack Engineer
+
+January 2022 - February 2023
+
+- Developed Flask/MongoDB APIs and Angular modules for client-facing and
+  internal product workflows, including third-party integrations and Azure
+  deployments.
+- Redesigned Pytest and test-database architecture, increasing coverage from
+  30% to 80%, removing flaky tests and stabilizing CI.
+
+### CXPLUS - Junior Full Stack Developer
+
+February 2021 - January 2022
+
+- Helped build a cloud ERP/CRM for internet service providers from scratch with
+  Django REST and PostgreSQL.
+- Designed core data models and deployed the containerized product on GCP.
+
+## Personal project
+
+### MCP RAG Portfolio
+
+This public portfolio demo is a personal project. It uses FastAPI, MCP,
+ChromaDB, local sentence-transformer embeddings and a pluggable LLM layer with
+Ollama, OpenAI and Amazon Bedrock providers. It is separate from the production
+MCP implementation described in the Plénitas experience.
 
 ## Education
-- BSc in Computer Science, Universidad de Granada (2017–2021). Final thesis: 9.8/10,
-  a web simulation of a server based on queueing theory.
 
-## Career goal
-Currently moving toward AI/LLM engineering and/or AWS-focused roles, leveraging
-hands-on production experience with MCP servers, RAG, Bedrock and event-driven
-architecture at scale.
+BSc in Computer Science, University of Granada, 2017-2021. Final thesis graded
+9.8/10: a queueing-theory server simulation.
+
+## Languages
+
+- Spanish: native
+- English: full professional proficiency, C1
+- French: B1
+
+## Target roles
+
+Senior Backend Engineer roles where Python, distributed systems, Kafka and AWS
+are central, with Applied AI where it solves a real product or operational
+problem.
