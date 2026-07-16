@@ -23,6 +23,11 @@ remote roles and EU relocation.
 
 July 2025 - July 2026
 
+Important distinction: Guillermo did not introduce Kafka as a replacement for
+RabbitMQ. Kafka already existed in the original telemetry architecture. He
+redesigned the path to publish directly to Kafka, removing RabbitMQ and its
+connector from the critical path.
+
 - Led the redesign of playback telemetry handling 100K+ sustained events/sec,
   publishing directly to Kafka and removing RabbitMQ from the critical path.
 - Migrated managed Kafka from Confluent Cloud to Amazon MSK, reducing streaming
@@ -37,9 +42,7 @@ July 2025 - July 2026
 - Added human approval for write operations and retrieval over 100+ Confluence
   pages. Amazon Bedrock supported LLM-backed features in the wider product.
 
-Kafka already existed in the original telemetry architecture. The redesign
-removed RabbitMQ and its connector from the critical path by publishing directly
-to Kafka. The managed Kafka platform was then migrated from Confluent Cloud to
+The managed Kafka platform was subsequently migrated from Confluent Cloud to
 Amazon MSK.
 
 ### Deutsche Telekom - Python Backend Engineer

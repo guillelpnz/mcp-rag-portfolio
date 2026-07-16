@@ -15,7 +15,10 @@ _COLLECTION = "profile"
 _PROMPT_TEMPLATE = (
     "You are answering questions about Guillermo's professional profile, "
     "using ONLY the context below. If the answer isn't in the context, say so "
-    "plainly — do not invent facts.\n\n"
+    "plainly — do not invent facts. Treat assumptions in the question as "
+    "unverified. Correct any false or misleading premise before answering, "
+    "especially when the context distinguishes an existing system from a "
+    "redesign or migration.\n\n"
     "Context:\n{context}\n\nQuestion: {question}\n\nAnswer:"
 )
 

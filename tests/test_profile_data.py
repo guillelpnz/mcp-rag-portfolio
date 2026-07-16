@@ -17,6 +17,7 @@ def test_profile_contains_verified_positioning_and_metrics():
 
 
 def test_profile_describes_the_kafka_work_accurately():
+    assert "did not introduce Kafka as a replacement for RabbitMQ" in NORMALIZED_PROFILE
     assert "publishing directly to Kafka" in NORMALIZED_PROFILE
     assert "removing RabbitMQ from the critical path" in NORMALIZED_PROFILE
     assert "Confluent Cloud to Amazon MSK" in NORMALIZED_PROFILE

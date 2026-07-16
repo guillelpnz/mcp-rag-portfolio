@@ -8,7 +8,7 @@ from __future__ import annotations
 import pytest
 
 from app.llm import LLMError
-from app.rag import _chunk
+from app.rag import _PROMPT_TEMPLATE, _chunk
 
 
 # --- chunking -------------------------------------------------------------
@@ -26,6 +26,11 @@ def test_chunk_empty_returns_empty():
 
 def test_chunk_short_text_single_chunk():
     assert _chunk("just a few words") == ["just a few words"]
+
+
+def test_prompt_requires_correction_of_misleading_premises():
+    assert "Treat assumptions in the question as unverified" in _PROMPT_TEMPLATE
+    assert "Correct any false or misleading premise" in _PROMPT_TEMPLATE
 
 
 # --- provider factory -----------------------------------------------------
